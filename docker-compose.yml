@@ -1,0 +1,30 @@
+services:
+  frontend:
+    image: manim-frontend
+    user: 0
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./frontend:/app
+    networks:
+      - net
+
+  manim:
+    image: manim-engine
+    user: 0
+    build: 
+      context: ./manim
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./manim:/manim
+    networks:
+      - net
+
+networks:
+  net:
+    driver: host
