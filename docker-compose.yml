@@ -9,6 +9,7 @@ services:
       - "8501:8501"
     volumes:
       - ./frontend:/app
+      - ./videos:/videos
     networks:
       - net
 
@@ -22,8 +23,11 @@ services:
       - "8000:8000"
     volumes:
       - ./manim:/manim
+      - ./videos:/videos
     networks:
       - net
+    environment:
+      OPENAI_API_KEY: "${OPENAI_API_KEY}"
 
 networks:
   net:

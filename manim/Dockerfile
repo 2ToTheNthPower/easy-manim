@@ -2,6 +2,10 @@
 FROM manimcommunity/manim:stable
 
 USER root
+
+# Install xdg-utils
+RUN apt-get update && apt-get install -y xdg-utils w3m
+
 # Set the working directory in the container
 WORKDIR /app
 
