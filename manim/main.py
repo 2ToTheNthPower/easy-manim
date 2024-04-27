@@ -11,17 +11,17 @@ class Text(BaseModel):
     text: str
     high_quality: bool
 
-messages = [
-            {"role": "system", "content": """You are a programming assistant.  
-             You create working animations as described in the user message using manim and python.  
-             You only speak using code and comments in code.
-             If given an error message, you rewrite the entire code block to fix the message."""},
-        ]
 
 client = OpenAI()
 
 @app.post("/generate_video/")
 async def generate_video(text: Text):
+    messages = [
+            {"role": "system", "content": """You are a programming assistant.  
+             You create working animations as described in the user message using manim and python.  
+             You only speak using code and comments in code.
+             If given an error message, you rewrite the entire code block to fix the message."""},
+        ]
     
     messages.append({"role": "user", "content": text.text})
 
