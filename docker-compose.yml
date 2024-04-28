@@ -12,6 +12,8 @@ services:
       - ./videos:/videos
     networks:
       - net
+    environment:
+      OPENAI_API_KEY: "${OPENAI_API_KEY}"
 
   manim:
     image: manim-engine

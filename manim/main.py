@@ -4,11 +4,13 @@ from openai import OpenAI
 import uvicorn
 import re
 import os
+import subprocess
 
 app = FastAPI()
 
 class Text(BaseModel):
     text: str
+    model_name: str
     high_quality: bool
 
 
@@ -25,18 +27,14 @@ async def generate_video(text: Text):
     
     messages.append({"role": "user", "content": text.text})
 
-    def get_response(messages: list):
+    def get_response(messages: list, model_name: str = text.model_name):
         completion = client.chat.completions.create(
-            model="gpt-3.5-turbo",
+            model=model_name,
             messages=messages
         )
 
-        print(completion.choices[0].message)
-
         code_block = re.search(r'```python\n(.*?)```', completion.choices[0].message.content, re.DOTALL)
         code = code_block.group(1)
-
-        print(code)
 
         # Get scene name based on class name in code
         SceneName = re.search(r'class (.*?)[(:]', code).group(1)
@@ -46,25 +44,25 @@ async def generate_video(text: Text):
 
         try:
             if text.high_quality:
-                os.system(f"manim -pqh /videos/{SceneName}.py {SceneName}")
-                os.system(f"cp /app/media/videos/{SceneName}/1080p60/{SceneName}.mp4 /videos/1080p60/")
+                subprocess.run(["manim", "-pqh", f"/videos/{SceneName}.py", SceneName], check=True)
+                subprocess.run(["cp", f"/app/media/videos/{SceneName}/1080p60/{SceneName}.mp4", "/videos/1080p60/"], check=True)
                 return {"video_path": f"/videos/1080p60/{SceneName}.mp4"}
             else:
-                os.system(f"manim -pql /videos/{SceneName}.py {SceneName}")
-                os.system(f"cp /app/media/videos/{SceneName}/480p15/{SceneName}.mp4 /videos/480p15/")
+                subprocess.run(["manim", "-pql", f"/videos/{SceneName}.py", SceneName], check=True)
+                subprocess.run(["cp", f"/app/media/videos/{SceneName}/480p15/{SceneName}.mp4", "/videos/480p15/"], check=True)
                 return {"video_path": f"/videos/480p15/{SceneName}.mp4"}
-        except Exception as e:
+        except subprocess.CalledProcessError as e:
             messages.append({"role": "user", "content": f"{str(e)}"})
             return messages
         
-    response = get_response(messages)
+    messages = get_response(messages)
 
     for i in range(5):
-        if isinstance(response, list):
+        if isinstance(messages, list):
             # if this just returns the list of messages, then we need to keep going
-            response = get_response(messages)
+            messages = get_response(messages)
         else:
-            return response
+            return messages
 
         
 
