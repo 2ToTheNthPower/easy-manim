@@ -2,6 +2,8 @@
 
 Welcome to Easy Manim! This tool allows you to generate manim animations by using natural language descriptions of the animations.
 
+![](https://github.com/2ToTheNthPower/easy-manim/blob/main/resources/demo.gif)
+
 ## Getting Started
 
 To get started with Easy Manim, follow these steps:
